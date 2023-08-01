@@ -10,38 +10,44 @@ const db = mysql.createConnection({
   console.log(`Connected to employees_db.`)
 );
 
-let exit = false;
+let doNotQuit = true;
 
 async function init(menuChoice) {
-  while (!exit) {//menu choice goes back to main at end of each function of choices until quit/exit is true
+  while (doNotQuit) {//menu choice goes back to main at end of each function of choices until quit/exit is true
     switch (menuChoice) {
+      case "mainMenu":
+        menuChoice = await mainMenu();
+        break
       case "viewDepartments":
         tableChoice = "department";
-        printQuery(tableChoice);
-        break;
+        printTable(tableChoice);
+        break
       case "viewRoles":
         tableChoice = "roles";
-        printQuery(tableChoice);
-        break;
+        printTable(tableChoice);
+        break
       case "viewEmployees":
         tableChoice = "employees";
-        printQuery(tableChoice);
-        break;
+        printTable(tableChoice);
+        break
       case "addDepartment":
         addNewDepartment();
-        break;
+        break
       case "addRole":
-        break;
+        addNewRole();
+        break
       case "addEmployee":
-        break;
+        //addNewEmployee();
+        break
       case "updateEmployee":
-        break;
+        //updateEmployeeRole();
+        break
       case "quit":
-        exit = true;
-        break;
+        doNotQuit = false;
+        break
       default:
-        //mainMenu
-        break;
+        mainMenu();
+        break
     }
   }
   console.log("Thank you for using EMS!")
@@ -66,7 +72,10 @@ async function mainMenu() {
       ],
     }
   ];
-
+  await inquirer.prompt(mainMenu)
+  .then((input) => {
+    return input.choice;
+  })
 }
 
 async function addNewDepartment() {
@@ -87,7 +96,6 @@ async function addNewDepartment() {
 
 };
 
-//todo: finish
 async function addNewRole() {
 
   let addRole = [
@@ -107,6 +115,12 @@ async function addNewRole() {
       message: "Type the ID of the department for this role.",
     },
   ];
+  await inquirer.prompt(addRole)
+  .then((input) => {
+    db.query(`INSERT INTO role(title, salary, department_id) VALUE(${input.newRole}, ${input.salary}, ${input.deptId},)`);
+    console.log("Department Added");
+    return "mainMenu";
+  })
 }
 
 let addEmpMenu = [
@@ -140,35 +154,15 @@ let updateEmpRoleMenu = [
   },
 ];
 
-function tableSelection() {
-  switch (input.choice) {
-    case "viewDepartments":
-      tableChoice = "department";
-      printQuery(tableChoice);
-      break;
-    case "viewRoles":
-      tableChoice = "roles";
-      printQuery(tableChoice);
-      break;
-    case "viewEmployees":
-      tableChoice = "employees";
-      printQuery(tableChoice);
-      break;
-    default:
-      break;
-  }
-  return;
-}
-
-
-function printQuery(tableChoice) {
+function printTable(tableChoice) {
   db.query(`SELECT * FROM ${tableChoice}`, function (err, results) {
     console.log(results);
   });
+  return "mainMenu";
 }
 
 
-init();
+init("mainMenu");
 
 
 
