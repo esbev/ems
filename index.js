@@ -13,7 +13,7 @@ const db = mysql.createConnection({
 let doNotQuit = true;
 
 async function init(menuChoice) {
-  while (doNotQuit) {//menu choice goes back to main at end of each function of choices until quit/exit is true
+  while (doNotQuit) {
     switch (menuChoice) {
       case "mainMenu":
         menuChoice = await mainMenu();
@@ -37,10 +37,10 @@ async function init(menuChoice) {
         addNewRole();
         break
       case "addEmployee":
-        //addNewEmployee();
+        addNewEmployee();
         break
       case "updateEmployee":
-        //updateEmployeeRole();
+        updateEmployeeRole();
         break
       case "quit":
         doNotQuit = false;
@@ -89,11 +89,13 @@ async function addNewDepartment() {
   ];
   await inquirer.prompt(addDept)
   .then((input) => {
-    db.query(`INSERT INTO department(dept_name) VALUE(${input.newDepartment})`);
+    db.query(`INSERT INTO department(dept_name) VALUE(${input.newDepartment})`,
+    function (err, results) {
+      if (err) throw err;
+    });
     console.log("Department Added");
-    return "mainMenu";
-  })
-
+  });
+  return "mainMenu";
 };
 
 async function addNewRole() {
@@ -117,56 +119,84 @@ async function addNewRole() {
   ];
   await inquirer.prompt(addRole)
   .then((input) => {
-    db.query(`INSERT INTO role(title, salary, department_id) VALUE(${input.newRole}, ${input.salary}, ${input.deptId},)`);
+    db.query(`INSERT INTO role(title, salary, department_id)
+    + VALUE(${input.newRole}, ${input.salary}, ${input.deptId},)`,
+    function (err, results) {
+      if (err) throw err;
+    });
     console.log("Department Added");
-    return "mainMenu";
-  })
-}
+  });
+  return "mainMenu";
+};
 
-let addEmpMenu = [
-  {
-    type: "input",
-    name: "firstName",
-    message: "Enter employee first name",
-  },
-  {
-    type: "input",
-    name: "lastName",
-    message: "Enter employee last name",
-  },
-  {
-    input: "list",
-    name: "empRole",
-    message: "Type the ID for the role for this employee.",
-  },
-];
+async function addNewEmployee() {
 
-let updateEmpRoleMenu = [
-  {
-    type: "input",
-    name: "employeeId",
-    message: "Enter employee ID to update",
-  },
-  {
-    type: "input",
-    name: "roleChoice",
-    message: "Type the ID for the new role.",
-  },
-];
+  let addEmployee = [
+    {
+      type: "input",
+      name: "firstName",
+      message: "Enter employee first name",
+    },
+    {
+      type: "input",
+      name: "lastName",
+      message: "Enter employee last name",
+    },
+    {
+      input: "list",
+      name: "empRole",
+      message: "Type the ID for the role for this employee.",
+    },
+    {
+      input: "list",
+      name: "managerID",
+      message: "Type the ID of the manager for this employee.",
+    },
+  ];
+  await inquirer.prompt(addEmployee)
+  .then((input) => {
+    db.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id)
+    + VALUE(${input.firstName}, ${input.lastName}, ${input.empRole}, ${input.managerID})`, 
+    function (err, results) {
+      if (err) throw err;
+    });
+    console.log("Employee Added");
+  });
+  return "mainMenu";
+};
 
-function printTable(tableChoice) {
+async function updateEmployeeRole() {
+
+  let newEmployeeRole = [
+    {
+      type: "input",
+      name: "employeeId",
+      message: "Enter employee ID to update",
+    },
+    {
+      type: "input",
+      name: "roleChoice",
+      message: "Type the role ID for the new role.",
+    },
+  ];
+  await inquirer.prompt(newEmployeeRole)
+  .then((input) => {
+    db.query(`UPDATE employee SET role_id = ${input.roleChoice} WHERE role_id = ${input.employeeId}`,
+    function (err, results) {
+      if (err) throw err;
+    });
+    console.log("Employee Updated");
+  });
+  return "mainMenu";
+};
+
+async function printTable(tableChoice) {
   db.query(`SELECT * FROM ${tableChoice}`, function (err, results) {
+    if (err) throw err;
     console.log(results);
   });
   return "mainMenu";
-}
+};
 
 
 init("mainMenu");
-
-
-
-
-
-//where employee.role = ? set to;
-//where employee.manager = ? set to;
