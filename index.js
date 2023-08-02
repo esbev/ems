@@ -1,7 +1,8 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
-const db = mysql.createConnection({
+const db = mysql.createConnection(
+  {
     host: 'localhost',
     user: 'root',
     password: '',
@@ -10,13 +11,14 @@ const db = mysql.createConnection({
   console.log(`Connected to employees_db.`)
 );
 
-let doNotQuit = true;
+let exit = false;
 
 async function init(menuChoice) {
-  while (doNotQuit) {
+  while (!exit) {
     switch (menuChoice) {
       case "mainMenu":
         menuChoice = await mainMenu();
+        console.log(menuChoice);
         break
       case "viewDepartments":
         tableChoice = "department";
@@ -43,10 +45,10 @@ async function init(menuChoice) {
         updateEmployeeRole();
         break
       case "quit":
-        doNotQuit = false;
+        exit = true;
         break
       default:
-        mainMenu();
+        // mainMenu();
         break
     }
   }
@@ -117,7 +119,8 @@ async function addNewRole() {
       message: "Type the ID of the department for this role.",
     },
   ];
-  await inquirer.prompt(addRole)
+  // await
+  inquirer.prompt(addRole)
   .then((input) => {
     db.query(`INSERT INTO role(title, salary, department_id)
     + VALUE(${input.newRole}, ${input.salary}, ${input.deptId},)`,
