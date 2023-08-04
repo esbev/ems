@@ -17,32 +17,40 @@ async function init(menuChoice) {
   while (!exit) {
     switch (menuChoice) {
       case "mainMenu":
-        menuChoice = await mainMenu();
-        console.log(menuChoice);
+        userInput = await mainMenu();
+        console.log(userInput.choice);
+        menuChoice = userInput.choice;
         break
       case "viewDepartments":
         tableChoice = "department";
-        printTable(tableChoice);
+        menuChoice = printTable(tableChoice);
+        menuChoice = "mainMenu";
         break
       case "viewRoles":
         tableChoice = "roles";
-        printTable(tableChoice);
+        menuChoice = printTable(tableChoice);
+        menuChoice = "mainMenu";
         break
       case "viewEmployees":
         tableChoice = "employees";
-        printTable(tableChoice);
+        menuChoice = printTable(tableChoice);
+        menuChoice = "mainMenu";
         break
       case "addDepartment":
         addNewDepartment();
+        menuChoice = "mainMenu";
         break
       case "addRole":
         addNewRole();
+        menuChoice = "mainMenu";
         break
       case "addEmployee":
         addNewEmployee();
+        menuChoice = "mainMenu";
         break
       case "updateEmployee":
         updateEmployeeRole();
+        menuChoice = "mainMenu";
         break
       case "quit":
         exit = true;
@@ -74,13 +82,14 @@ async function mainMenu() {
       ],
     }
   ];
-  await inquirer.prompt(mainMenu)
-  .then((input) => {
-    return input.choice;
-  })
+  return inquirer.prompt(mainMenu);
+  // .then((input) => {
+  //   return input.choice;
+  // })
 }
 
 async function addNewDepartment() {
+  console.log("add dept");
 
   let addDept = [
     {
@@ -89,19 +98,19 @@ async function addNewDepartment() {
       message: "Type the department you would like to add.",
     }
   ];
-  await inquirer.prompt(addDept)
-  .then((input) => {
-    db.query(`INSERT INTO department(dept_name) VALUE(${input.newDepartment})`,
-    function (err, results) {
-      if (err) throw err;
-    });
-    console.log("Department Added");
-  });
-  return "mainMenu";
+  // await inquirer.prompt(addDept)
+  // .then((input) => {
+  //   db.query(`INSERT INTO department(dept_name) VALUE(${input.newDepartment})`,
+  //   function (err, results) {
+  //     if (err) throw err;
+  //   });
+  //   console.log("Department Added");
+  // });
+  // return "mainMenu";
 };
 
 async function addNewRole() {
-
+  console.log("add role");
   let addRole = [
     {
       type: "input",
@@ -120,19 +129,20 @@ async function addNewRole() {
     },
   ];
   // await
-  inquirer.prompt(addRole)
-  .then((input) => {
-    db.query(`INSERT INTO role(title, salary, department_id)
-    + VALUE(${input.newRole}, ${input.salary}, ${input.deptId},)`,
-    function (err, results) {
-      if (err) throw err;
-    });
-    console.log("Department Added");
-  });
-  return "mainMenu";
+  // inquirer.prompt(addRole)
+  // .then((input) => {
+  //   db.query(`INSERT INTO role(title, salary, department_id)
+  //   + VALUE(${input.newRole}, ${input.salary}, ${input.deptId},)`,
+  //   function (err, results) {
+  //     if (err) throw err;
+  //   });
+  //   console.log("Department Added");
+  // });
+  // return "mainMenu";
 };
 
 async function addNewEmployee() {
+  console.log("add employee");
 
   let addEmployee = [
     {
@@ -156,19 +166,20 @@ async function addNewEmployee() {
       message: "Type the ID of the manager for this employee.",
     },
   ];
-  await inquirer.prompt(addEmployee)
-  .then((input) => {
-    db.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id)
-    + VALUE(${input.firstName}, ${input.lastName}, ${input.empRole}, ${input.managerID})`, 
-    function (err, results) {
-      if (err) throw err;
-    });
-    console.log("Employee Added");
-  });
-  return "mainMenu";
+  // await inquirer.prompt(addEmployee)
+  // .then((input) => {
+  //   db.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id)
+  //   + VALUE(${input.firstName}, ${input.lastName}, ${input.empRole}, ${input.managerID})`, 
+  //   function (err, results) {
+  //     if (err) throw err;
+  //   });
+  //   console.log("Employee Added");
+  // });
+  // return "mainMenu";
 };
 
 async function updateEmployeeRole() {
+  console.log("Update");
 
   let newEmployeeRole = [
     {
@@ -182,23 +193,25 @@ async function updateEmployeeRole() {
       message: "Type the role ID for the new role.",
     },
   ];
-  await inquirer.prompt(newEmployeeRole)
-  .then((input) => {
-    db.query(`UPDATE employee SET role_id = ${input.roleChoice} WHERE role_id = ${input.employeeId}`,
-    function (err, results) {
-      if (err) throw err;
-    });
-    console.log("Employee Updated");
-  });
-  return "mainMenu";
+  // await inquirer.prompt(newEmployeeRole)
+  // .then((input) => {
+  //   db.query(`UPDATE employee SET role_id = ${input.roleChoice} WHERE role_id = ${input.employeeId}`,
+  //   function (err, results) {
+  //     if (err) throw err;
+  //   });
+  //   console.log("Employee Updated");
+  // });
+  // return "mainMenu";
 };
 
 async function printTable(tableChoice) {
-  db.query(`SELECT * FROM ${tableChoice}`, function (err, results) {
-    if (err) throw err;
-    console.log(results);
-  });
-  return "mainMenu";
+  console.log("print table");
+
+  // await db.query(`SELECT * FROM ${tableChoice}`, function (err, results) {
+  //   if (err) throw err;
+  //   console.log(results);
+  // });
+  // return "mainMenu";
 };
 
 
